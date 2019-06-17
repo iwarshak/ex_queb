@@ -73,17 +73,16 @@ defmodule ExQueb do
   end
 
   defp _build_date_filter(query, fld, value, :gte) do
-    where(query, [q], fragment("? >= ?", field(q, ^fld), type(^value, Ecto.DateTime)))
+    where(query, [q], fragment("? >= ?", field(q, ^fld), type(^value, DateTime)))
   end
   defp _build_date_filter(query, fld, value, :lte) do
-    where(query, [q], fragment("? <= ?", field(q, ^fld), type(^value, Ecto.DateTime)))
+    where(query, [q], fragment("? <= ?", field(q, ^fld), type(^value, DateTime)))
   end
 
   defp cast_date_time(value) do
-    {:ok, date} = Ecto.Date.cast(value)
-    date
-    |> Ecto.DateTime.from_date
-    |> Ecto.DateTime.to_string
+    {:ok, date} = Date.cast(value)
+    NaiveDateTime.new(date.year, date.month, date.day, 0, 0, 0, 0)
+    |> NaiveDateTime.to_string
   end
 
   @doc """
@@ -147,7 +146,7 @@ defmodule ExQueb do
 
   defp get_default_order_by_field(query) do
     case query do
-      %{from: {_, mod}} ->
+      %{from: %{source: {_, mod}}} ->
         case mod.__schema__(:primary_key) do
           [name |_] -> name
           _ -> mod.__schema__(:fields) |> List.first
