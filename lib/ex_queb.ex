@@ -80,9 +80,9 @@ defmodule ExQueb do
   end
 
   defp cast_date_time(value) do
-    {:ok, date} = Date.cast(value)
-    NaiveDateTime.new(date.year, date.month, date.day, 0, 0, 0, 0)
-    |> NaiveDateTime.to_string
+    {:ok, date} = Date.from_iso8601(value)
+    {:ok, date} = NaiveDateTime.new(date.year, date.month, date.day, 0, 0, 0, 0)
+    date |> NaiveDateTime.to_string
   end
 
   @doc """
